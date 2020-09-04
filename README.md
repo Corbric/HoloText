@@ -1,16 +1,11 @@
-# Fabric Example Mod
+# Holo Text
 
-## Setup
+## How to install
 
-1. Edit build.gradle and mod.json to suit your needs.
-    * The "mixins" object can be removed from mod.json if you do not need to use mixins.
-    * Please replace all occurences of "modid" with your own mod ID - sometimes, a different string may also suffice.
-2. Run the following command:
+1. check the releases
+2. put the jar from releases and SwiftAPI in your servers mods folder
+3. run your server
 
-```
-./gradlew idea
-```
+## How to use
 
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+1. run /holo
