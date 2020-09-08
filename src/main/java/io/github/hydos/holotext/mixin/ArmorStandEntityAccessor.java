@@ -1,0 +1,12 @@
+package io.github.hydos.holotext.mixin;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+import net.minecraft.entity.decoration.ArmorStandEntity;
+
+@Mixin(ArmorStandEntity.class)
+public interface ArmorStandEntityAccessor {
+    @Invoker
+    void invokeMethod_7707(boolean bl);
+}

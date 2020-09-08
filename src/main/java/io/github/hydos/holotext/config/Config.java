@@ -20,8 +20,8 @@ public class Config {
 
     private final boolean enabled;
     private final List<Entry> entries;
-    private Config(boolean enabled, List<Entry> entries) {
 
+    private Config(boolean enabled, List<Entry> entries) {
         this.enabled = enabled;
         this.entries = entries;
     }
@@ -49,7 +49,7 @@ public class Config {
         private final String text;
         private final String name;
 
-        private Entry(BlockPos pos, String text, String name) {
+        public Entry(BlockPos pos, String text, String name) {
             this.pos = pos;
             this.text = text;
             this.name = name;

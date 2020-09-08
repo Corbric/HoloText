@@ -4,8 +4,7 @@
   "package": "io.github.hydos.holotext.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-  ],
-  "client": [
+    "ArmorStandEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
