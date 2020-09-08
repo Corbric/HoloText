@@ -1,2 +1,4 @@
 command.holo.usage=Holo
 command.holo.error=Error
+comand.holo.add.error=Error spawning armor stand
+command.holo.error.incorrectEntity=§cCan only be executed by a Player!
