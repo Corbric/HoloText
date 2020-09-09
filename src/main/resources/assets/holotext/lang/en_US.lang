@@ -1,8 +1,3 @@
 command.holo.usage=Holo
 command.holo.error=Error
-comand.holo.add.error=Error spawning armor stand
 command.holo.error.incorrectEntity=§cCan only be executed by a Player!
-command.holo.locate.notfound=§cCould not find any holo texts within ten blocks
-command.holo.locate.found=Found %d nearby holo texts
-command.holo.locate.found.entry=%d. Position: %d %d %d \n UUID: %s
-comand.holo.add.success=Added Holo text!

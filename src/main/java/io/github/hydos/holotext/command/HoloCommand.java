@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import blue.endless.jankson.impl.SyntaxError;
 import io.github.hydos.holotext.HoloText;
 import io.github.hydos.holotext.core.BrigadierCommand;
 import io.github.hydos.holotext.core.HoloTextEntry;
@@ -17,7 +18,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.CommonI18n;
 
 import net.fabricmc.fabric.api.command.v1.ServerCommandSource;
 import static net.fabricmc.fabric.api.command.v1.CommandManager.argument;
@@ -40,6 +40,8 @@ public class HoloCommand extends BrigadierCommand {
                 argument("uuid", StringArgumentType.string())
                         .executes(HoloCommand::remove)
         ));
+        this.register(literal("save").executes(HoloCommand::save));
+        this.register(literal("load").executes(HoloCommand::load));
     }
 
     @Override
@@ -65,16 +67,13 @@ public class HoloCommand extends BrigadierCommand {
         PlayerEntity source = (PlayerEntity) ctx.getSource().getEntity();
         HoloTextEntry entry = new HoloTextEntry(source.getPos(), StringArgumentType.getString(ctx, "text"), source.getWorld());
         if (entry.create()) {
-            source.sendMessage(new LiteralText(CommonI18n.translate("comand.holo.add.success")));
+            source.sendMessage(new LiteralText("Added Holo text!"));
+            HoloText.getConfig().getEntryList().add(entry);
+            serialize();
             return 1;
         }
-        try {
-            HoloText.serialize();
-        } catch (IOException e) {
-            HoloText.LOGGER.error("Error serializing config!");
-            e.printStackTrace();
-        }
-        source.sendMessage(new LiteralText(CommonI18n.translate("comand.holo.add.error")));
+        source.sendMessage(new LiteralText("Error spawning armor stand. Check the console for more details."));
+        new AssertionError().printStackTrace();
         return 0;
     }
 
@@ -82,14 +81,14 @@ public class HoloCommand extends BrigadierCommand {
         List<Entity> entities = ctx.getSource().getWorld().getEntitiesIn(ctx.getSource().getEntity(), Boxes.of(ctx.getSource().getEntity().getBlockPos(), 10), (entity) -> entity instanceof ArmorStandEntity);
         entities.removeIf((entity) -> !(HoloText.getConfig().getEntryList().stream().map(HoloTextEntry::getUuid).collect(Collectors.toList()).contains(entity.getUuid())));
         if (entities.isEmpty()) {
-            ctx.getSource().sendFeedback(new LiteralText(CommonI18n.translate("command.holo.locate.notfound")));
+            ctx.getSource().sendFeedback(new LiteralText("§cCould not find any holo texts within ten blocks"));
             return 0;
         } else {
-            ctx.getSource().sendFeedback(new LiteralText(CommonI18n.translate("command.holo.locate.found", entities.size())));
+            ctx.getSource().sendFeedback(new LiteralText(String.format("Found %d nearby holo texts", entities.size())));
             int[] a = new int[1];
             entities.forEach((entity) -> {
                 a[0]++;
-                ctx.getSource().sendFeedback(new LiteralText(CommonI18n.translate("command.holo.locate.found.entry", a[0], entity.getBlockPos().getX(), entity.getBlockPos().getY(), entity.getBlockPos().getZ(), entity.getUuid().toString())));
+                ctx.getSource().sendFeedback(new LiteralText(String.format("%d. Position: %d %d %d \\n UUID: %s", a[0], entity.getBlockPos().getX(), entity.getBlockPos().getY(), entity.getBlockPos().getZ(), entity.getUuid().toString())));
             });
         }
         return 1;
@@ -98,12 +97,35 @@ public class HoloCommand extends BrigadierCommand {
     private static int remove(CommandContext<ServerCommandSource> ctx) {
         String uuid = StringArgumentType.getString(ctx, "uuid");
         HoloText.getConfig().getEntryList().removeIf((entity) -> entity.getUuidAsString().equals(uuid));
+        serialize();
+        return 1;
+    }
+
+    private static int save(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
+        serialize();
+        return 1;
+    }
+
+    private static int load(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
+        deserialize();
+        return 1;
+    }
+
+    private static void serialize() {
         try {
             HoloText.serialize();
         } catch (IOException e) {
             HoloText.LOGGER.error("Error serializing config!");
             e.printStackTrace();
         }
-        return 1;
+    }
+
+    private static void deserialize() {
+        try {
+            HoloText.deserialize();
+        } catch (IOException | SyntaxError e) {
+            HoloText.LOGGER.error("Error deserializing config!");
+            e.printStackTrace();
+        }
     }
 }
