@@ -44,10 +44,7 @@ dependencies {
         exclude module: "guava"
     }
     implementation 'com.mojang:brigadier:1.0.17'
-    modImplementation("net.swifthq:SwiftAPI:1.7.1") {
-        exclude module: "fabric-api"
-    }
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.1"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.3"
     modImplementation "io.github.legacy-fabric-community:shadowedconfig:1.1.0"
 }
 
