@@ -8,7 +8,6 @@ import io.github.hydos.holotext.HoloText;
 import io.github.hydos.holotext.core.BrigadierCommand;
 import io.github.hydos.holotext.core.HoloTextEntry;
 import io.github.hydos.holotext.util.Boxes;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -26,8 +25,6 @@ import static net.fabricmc.fabric.api.command.v1.CommandManager.argument;
 import static net.fabricmc.fabric.api.command.v1.CommandManager.literal;
 
 public class HoloCommand extends BrigadierCommand {
-    private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
-
     public HoloCommand() {
         super("holo", entity -> entity instanceof PlayerEntity);
     }
@@ -35,20 +32,15 @@ public class HoloCommand extends BrigadierCommand {
     @Override
     protected void initCommands() {
         this.register(literal("add").then(
-                argument("text", StringArgumentType.word())
-                        .executes(this::add)
+                argument("text", StringArgumentType.greedyString())
+                        .executes(HoloCommand::add)
                 )
         );
-        this.register(literal("locate").executes(this::locate));
+        this.register(literal("locate").executes(HoloCommand::locate));
         this.register(literal("remove").then(
                 argument("uuid", StringArgumentType.string())
-                        .executes(this::remove)
+                        .executes(HoloCommand::remove)
         ));
-    }
-
-    @Override
-    protected CommandDispatcher<ServerCommandSource> getDispatcher() {
-        return this.dispatcher;
     }
 
     @Override
@@ -70,7 +62,7 @@ public class HoloCommand extends BrigadierCommand {
         this.dispatcher.register(command);
     }
 
-    private int add(CommandContext<ServerCommandSource> ctx) {
+    private static int add(CommandContext<ServerCommandSource> ctx) {
         PlayerEntity source = (PlayerEntity) ctx.getSource().getEntity();
         HoloTextEntry entry = new HoloTextEntry(source.getPos(), StringArgumentType.getString(ctx, "text"), source.getWorld());
         if (entry.create()) {
@@ -80,7 +72,7 @@ public class HoloCommand extends BrigadierCommand {
         return 0;
     }
 
-    private int locate(CommandContext<ServerCommandSource> ctx) {
+    private static int locate(CommandContext<ServerCommandSource> ctx) {
         List<Entity> entities = ctx.getSource().getWorld().getEntitiesIn(ctx.getSource().getEntity(), Boxes.of(ctx.getSource().getEntity().getBlockPos(), 10), (entity) -> entity instanceof ArmorStandEntity);
         entities.removeIf((entity) -> !(HoloText.getConfig().getEntryList().stream().map(HoloTextEntry::getUuid).collect(Collectors.toList()).contains(entity.getUuid())));
         if (entities.isEmpty()) {
@@ -97,7 +89,7 @@ public class HoloCommand extends BrigadierCommand {
         return 1;
     }
 
-    private int remove(CommandContext<ServerCommandSource> ctx) {
+    private static int remove(CommandContext<ServerCommandSource> ctx) {
         String uuid = StringArgumentType.getString(ctx, "uuid");
         HoloText.getConfig().getEntryList().removeIf((entity) -> entity.getUuidAsString().equals(uuid));
         try {

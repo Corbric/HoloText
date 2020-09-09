@@ -20,6 +20,7 @@ import net.fabricmc.fabric.api.command.v1.ServerCommandSource;
 public abstract class BrigadierCommand extends AbstractCommand {
     protected final String commandName;
     protected Predicate<Entity> entityPredicate = entity -> true;
+    protected final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
 
     public BrigadierCommand(String name) {
         this.commandName = name;
@@ -33,8 +34,6 @@ public abstract class BrigadierCommand extends AbstractCommand {
 
     protected abstract void initCommands();
 
-    protected abstract CommandDispatcher<ServerCommandSource> getDispatcher();
-
     protected abstract String getErrorTranslationKey();
 
     @Override
@@ -46,7 +45,7 @@ public abstract class BrigadierCommand extends AbstractCommand {
         }
         ServerCommandSource serverCommandSource = new ServerCommandSource(source, source.getPos(), (ServerWorld) source.getWorld(), source.getEntity(), this.getPermissionLevel());
         try {
-            this.getDispatcher().execute(String.join(" ", args), serverCommandSource);
+            this.dispatcher.execute(String.join(" ", args), serverCommandSource);
         } catch (CommandSyntaxException e) {
             e.printStackTrace();
             throw new CommandException(this.getErrorTranslationKey());
