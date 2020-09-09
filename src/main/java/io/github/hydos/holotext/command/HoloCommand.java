@@ -17,7 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CommonI18n;
 
 import net.fabricmc.fabric.api.command.v1.ServerCommandSource;
@@ -66,9 +65,16 @@ public class HoloCommand extends BrigadierCommand {
         PlayerEntity source = (PlayerEntity) ctx.getSource().getEntity();
         HoloTextEntry entry = new HoloTextEntry(source.getPos(), StringArgumentType.getString(ctx, "text"), source.getWorld());
         if (entry.create()) {
+            source.sendMessage(new LiteralText(CommonI18n.translate("comand.holo.add.success")));
             return 1;
         }
-        source.sendMessage(new TranslatableText("comand.holo.add.error"));
+        try {
+            HoloText.serialize();
+        } catch (IOException e) {
+            HoloText.LOGGER.error("Error serializing config!");
+            e.printStackTrace();
+        }
+        source.sendMessage(new LiteralText(CommonI18n.translate("comand.holo.add.error")));
         return 0;
     }
 
