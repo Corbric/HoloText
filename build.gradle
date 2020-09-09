@@ -25,6 +25,9 @@ repositories {
         name = 'legacy-fabric'
         url = 'https://dl.bintray.com/legacy-fabric/Legacy-Fabric-Maven'
     }
+    maven {
+        url = 'https://dl.bintray.com/boogiemonster1o1/cool-mods/'
+    }
 }
 
 minecraft {
@@ -40,10 +43,12 @@ dependencies {
     modCompile ("net.fabricmc:fabric-loader-1.8.9:${project.loader_version}") {
         exclude module: "guava"
     }
-
     implementation 'com.mojang:brigadier:1.0.17'
-    modImplementation("net.swifthq:SwiftAPI:1.7.1")
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.3"
+    modImplementation("net.swifthq:SwiftAPI:1.7.1") {
+        exclude module: "fabric-api"
+    }
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.1"
+    modImplementation "io.github.legacy-fabric-community:shadowedconfig:1.1.0"
 }
 
 processResources {
