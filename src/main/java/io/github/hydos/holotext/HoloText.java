@@ -28,6 +28,12 @@ public class HoloText implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Starting HoloText");
+		try {
+			deserialize();
+		} catch (IOException | SyntaxError e) {
+			LOGGER.error("Error deserializing config!");
+			e.printStackTrace();
+		}
 	}
 
 	public static void deserialize() throws IOException, SyntaxError {
@@ -38,6 +44,12 @@ public class HoloText implements ModInitializer {
 		JsonObject object = JANKSON.load(CONFIG_PATH.toFile());
 		DataResult<Pair<Config, JsonElement>> configDataResult = Config.CODEC.decode(JanksonOps.INSTANCE, object);
 		config = configDataResult.getOrThrow(false, System.err::println).getFirst();
+	}
+
+	public static void serialize() throws IOException {
+		DataResult<JsonElement> result = Config.CODEC.encodeStart(JanksonOps.INSTANCE, config);
+		JsonElement json = result.getOrThrow(false, System.err::println);
+		Files.write(CONFIG_PATH, json.toJson(true, true).getBytes(StandardCharsets.UTF_8));
 	}
 
 	public static Config getConfig() {
