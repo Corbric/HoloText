@@ -9,9 +9,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 
 @Mixin(MinecraftServer.class)
-public class MinecraftServerMixin {
+public class MixinMinecraftServer {
     @Inject(at = @At("RETURN"), method = "createCommandManager")
-    public void intercept(CallbackInfoReturnable<CommandManager> cir) {
+    public void intercept(CallbackInfoReturnable<CommandManager> infoIn) {
 
     }
 }
