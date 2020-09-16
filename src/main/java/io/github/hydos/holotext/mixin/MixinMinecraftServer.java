@@ -1,6 +1,5 @@
 package io.github.hydos.holotext.mixin;
 
-import io.github.hydos.holotext.command.HoloCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,9 +9,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 
 @Mixin(MinecraftServer.class)
-public class MinecraftServerMixin {
+public class MixinMinecraftServer {
     @Inject(at = @At("RETURN"), method = "createCommandManager")
-    public void intercept(CallbackInfoReturnable<CommandManager> cir) {
-        cir.getReturnValue().registerCommand(new HoloCommand());
+    public void intercept(CallbackInfoReturnable<CommandManager> infoIn) {
+
     }
 }
