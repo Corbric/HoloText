@@ -63,4 +63,9 @@ public class EntityHoloText extends ArmorStandEntity implements IHoloTextAccess 
     public ServerWorld getServerWorld() {
         return (ServerWorld) this.world;
     }
+
+    @Override
+    public Entry getEntry() {
+        return this.entry;
+    }
 }
