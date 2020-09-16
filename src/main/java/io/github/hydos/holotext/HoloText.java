@@ -30,6 +30,8 @@ public class HoloText implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Starting HoloText");
+		check();
+		deserialize();
 		ServerEntityEvents.ENTITY_LOAD.register((entityIn, worldIn) -> {
 			if (entityIn instanceof IHoloTextAccess) {
 				Entry e = ((EntityHoloText) entityIn).getHoloText().getEntry();
@@ -63,6 +65,7 @@ public class HoloText implements ModInitializer {
 			}
 			if (!Files.exists(CONFIG_PATH)) {
 				Files.createFile(CONFIG_PATH);
+				Files.write(CONFIG_PATH, "{\"entries\":{}}".getBytes(StandardCharsets.UTF_8));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
