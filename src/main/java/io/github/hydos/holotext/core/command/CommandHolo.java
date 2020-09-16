@@ -1,5 +1,6 @@
 package io.github.hydos.holotext.core.command;
 
+import io.github.hydos.holotext.HoloText;
 import io.github.hydos.holotext.core.EntityHoloText;
 import com.google.common.collect.Lists;
 
@@ -40,6 +41,8 @@ public class CommandHolo extends AbstractCommand {
                             entity.setText(Lists.newArrayList(otherArgs));
                             sourceIn.getWorld().spawnEntity(entity);
                             sourceIn.sendMessage(new LiteralText("Successfully added HoloText at position " + entity.getPos().toString()));
+                            HoloText.CONFIG.getEntryMap().put(name, entity.getEntry());
+                            HoloText.serialize();
                         }
                     }
                 }
