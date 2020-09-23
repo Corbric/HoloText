@@ -9,6 +9,7 @@ import net.minecraft.command.AbstractCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.server.MinecraftServer;
 
 import static io.github.hydos.holotext.HoloText.argument;
 import static io.github.hydos.holotext.HoloText.literal;
@@ -26,11 +27,33 @@ public class HoloTextCommand extends AbstractCommand {
                                 literal("add")
                                         .then(
                                                 argument("name", StringArgumentType.string())
+                                                        .then(
+                                                                argument("text", StringArgumentType.greedyString())
+                                                                        .executes(ctx -> {
+                                                                            var source = ctx.getSource();
+                                                                            var armorStand = new ArmorStandEntity(source.getWorld(), source.getPos().x, source.getPos().y, source.getPos().z);
+                                                                            HoloTexts.create(armorStand, StringArgumentType.getString(ctx, "name"));
+                                                                            armorStand.setCustomNameVisible(true);
+                                                                            armorStand.setCustomName(StringArgumentType.getString(ctx, "text"));
+                                                                            source.getWorld().spawnEntity(armorStand);
+                                                                            return 1;
+                                                                        })
+                                                        )
+                                        )
+                        )
+                        .then(
+                                literal("remove")
+                                        .then(
+                                                argument("name", StringArgumentType.string())
                                                         .executes(ctx -> {
-                                                            CommandSource s = ctx.getSource();
-                                                            ArmorStandEntity entity = new ArmorStandEntity(s.getWorld(), s.getPos().x, s.getPos().y, s.getPos().z);
-                                                            HoloTexts.create(entity, StringArgumentType.getString(ctx, "name"));
-                                                            s.getWorld().spawnEntity(entity);
+                                                            HoloText.CONFIG.getEntries().removeIf((entry) -> {
+                                                                boolean ret = entry.getName().equals(StringArgumentType.getString(ctx, "name"));
+                                                                var armorStand = MinecraftServer.getServer().getEntity(entry.getDetails().getUuid());
+                                                                if (ret && armorStand != null) {
+                                                                    armorStand.getWorld().removeEntity(armorStand);
+                                                                }
+                                                                return ret;
+                                                            });
                                                             return 1;
                                                         })
                                         )
@@ -50,10 +73,11 @@ public class HoloTextCommand extends AbstractCommand {
 
     @Override
     public void execute(CommandSource source, String[] args) throws CommandException {
-        String v = this.getCommandName() + " " + String.join(" ", args);
+        var full = this.getCommandName() + " " + String.join(" ", args);
         try {
-            HoloText.DISPATCHER.execute(v, source);
+            HoloText.DISPATCHER.execute(full, source);
         } catch (CommandSyntaxException e) {
+            e.printStackTrace();
             throw new CommandException("command.holo.error");
         }
     }

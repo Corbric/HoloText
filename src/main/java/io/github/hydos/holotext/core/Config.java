@@ -107,7 +107,7 @@ public class Config {
             public boolean equals(Object o) {
                 if (this == o) return true;
                 if (!(o instanceof Details)) return false;
-                Details details = (Details) o;
+                var details = (Details) o;
                 return this.getDimId() == details.getDimId() &&
                         Objects.equal(this.getPos(), details.getPos());
             }

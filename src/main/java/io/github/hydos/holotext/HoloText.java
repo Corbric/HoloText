@@ -13,7 +13,6 @@ import blue.endless.jankson.impl.SyntaxError;
 import io.github.hydos.holotext.core.ArmorStandExtensions;
 import io.github.hydos.holotext.core.Config;
 import io.github.hydos.holotext.core.HoloTextCommand;
-import io.github.hydos.holotext.core.HoloTexts;
 import io.github.legacy_fabric_community.serialization.json.JanksonOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +23,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import net.fabricmc.api.ModInitializer;
@@ -72,9 +70,8 @@ public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 			}
 			if (!Files.exists(CONFIG_PATH)) {
 				Files.createFile(CONFIG_PATH);
-				JsonObject e = new JsonObject();
+				var e = new JsonObject();
 				e.put("entries", new JsonObject(), "The data pertaining to each holotext will be stored in this file");
-				// you can't stop me ;P
 				Files.writeString(CONFIG_PATH, e.toJson(true, true));
 			}
 		} catch (IOException e) {
@@ -86,7 +83,7 @@ public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 	public void onLoad(Entity entity, ServerWorld serverWorld) {
 		LOGGER.info("an entity loaded");
 		if (entity instanceof ArmorStandExtensions) {
-			if (CONFIG.getEntries().stream().map(entry -> entry.getDetails().getUuid().toString()).collect(Collectors.toList()).contains(entity.getUuid().toString()) {
+			if (!CONFIG.getEntries().stream().map(entry -> entry.getDetails().getUuid().toString()).collect(Collectors.toList()).contains(entity.getUuid().toString())) {
 				CONFIG.getEntries().removeIf(entry -> entry.getDetails().getUuid().toString().equals(entity.getUuid().toString()));
 			}
 		}
