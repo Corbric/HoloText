@@ -5,10 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
+import io.github.hydos.holotext.core.ArmorStandExtensions;
 import io.github.hydos.holotext.core.Config;
 import io.github.hydos.holotext.core.HoloTextCommand;
 import io.github.hydos.holotext.core.HoloTexts;
@@ -83,8 +85,9 @@ public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 	@Override
 	public void onLoad(Entity entity, ServerWorld serverWorld) {
 		LOGGER.info("an entity loaded");
-		if (entity instanceof ArmorStandEntity) {
-			if (HoloTexts.check((ArmorStandEntity) entity)) {
+		if (entity instanceof ArmorStandExtensions) {
+			if (CONFIG.getEntries().stream().map(entry -> entry.getDetails().getUuid().toString()).collect(Collectors.toList()).contains(entity.getUuid().toString()) {
+				CONFIG.getEntries().removeIf(entry -> entry.getDetails().getUuid().toString().equals(entity.getUuid().toString()));
 			}
 		}
 	}

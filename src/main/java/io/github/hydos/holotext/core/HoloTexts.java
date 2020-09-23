@@ -13,7 +13,7 @@ public final class HoloTexts {
         if (entity instanceof ArmorStandExtensions) {
             ((ArmorStandExtensions) entity).setHoloText(true);
             ((ArmorStandExtensions) entity).setHoloTextId(name);
-            HoloText.CONFIG.getEntries().add(new Config.Entry(name, new Config.Entry.Details(entity.getPos(), entity.getWorld().dimension.getType())));
+            HoloText.CONFIG.getEntries().add(new Config.Entry(name, new Config.Entry.Details(entity.getPos(), entity.getUuid(), entity.getWorld().dimension.getType())));
             HoloText.serialize();
             return;
         }

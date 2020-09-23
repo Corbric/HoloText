@@ -1,6 +1,7 @@
 package io.github.hydos.holotext.core;
 
 import java.util.List;
+import java.util.UUID;
 
 import io.github.legacy_fabric_community.serialization.CommonCodecs;
 import com.google.common.base.Objects;
@@ -74,20 +75,28 @@ public class Config {
         }
 
         public static class Details {
+            public static final Codec<UUID> UUID_CODEC = Codec.STRING.xmap(UUID::fromString, UUID::toString);
             public static final Codec<Details> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                     CommonCodecs.VEC_3_D.fieldOf("pos").forGetter(Details::getPos),
+                    UUID_CODEC.fieldOf("uuid").forGetter(Details::getUuid),
                     Codec.INT.fieldOf("dimId").forGetter(Details::getDimId)
             ).apply(instance, Details::new));
             private final Vec3d pos;
             private final int dimId;
+            private final UUID uuid;
 
-            public Details(Vec3d pos, int dimId) {
+            public Details(Vec3d pos, UUID uuid, int dimId) {
                 this.pos = pos;
+                this.uuid = uuid;
                 this.dimId = dimId;
             }
 
             public Vec3d getPos() {
                 return this.pos;
+            }
+
+            public UUID getUuid() {
+                return this.uuid;
             }
 
             public int getDimId() {
