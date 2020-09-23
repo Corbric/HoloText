@@ -4,8 +4,8 @@
   "package": "io.github.hydos.holotext.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AccessorArmorStandEntity",
-    "MixinMinecraftServer"
+    "ArmorStandEntityMixin",
+    "MinecraftServerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

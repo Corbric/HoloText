@@ -1,10 +1,13 @@
+import net.fabricmc.loom.task.RemapJarTask
+
 plugins {
     id 'maven-publish'
     id 'fabric-loom' version "0.4-SNAPSHOT"
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -36,6 +39,10 @@ minecraft {
     }
 }
 
+configurations {
+    shade
+}
+
 dependencies {
     compile "com.google.guava:guava:23.5-jre"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -44,8 +51,22 @@ dependencies {
         exclude module: "guava"
     }
     implementation 'com.mojang:brigadier:1.0.17'
+    shade 'com.mojang:brigadier:1.0.17'
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.7.3"
     modImplementation "io.github.legacy-fabric-community:shadowedconfig:1.1.0"
+}
+
+tasks.remapJar.dependsOn(shadowJar)
+(tasks.remapJar.input as FileSystemLocationProperty<? extends FileSystemLocation>).set(shadowJar.archivePath)
+
+shadowJar {
+    dependencies {
+        exclude(dependency('com.mojang:minecraft:.*'))
+        exclude(dependency('net.fabricmc:.*:.*'))
+        exclude(dependency('io.github.legacy-fabric-community:.*:.*'))
+    }
+    configurations = [project.configurations.shade]
+    relocate 'com.mojang.brigadier', 'io.github.hydos.holotext.shadowed.com.mojang.brigadier'
 }
 
 processResources {
