@@ -14,8 +14,6 @@ import net.minecraft.world.World;
 
 @Mixin(ArmorStandEntity.class)
 public abstract class ArmorStandEntityMixin extends LivingEntity implements ArmorStandExtensions {
-    @Shadow public abstract void setInvisible(boolean invisible);
-
     @Shadow protected abstract void setNoBasePlate(boolean value);
 
     @Shadow protected abstract void setNoGravity(boolean value);
@@ -51,7 +49,8 @@ public abstract class ArmorStandEntityMixin extends LivingEntity implements Armo
         this.setInvisible(true);
         this.setInvulnerable(true);
         this.setNoBasePlate(true);
-        this.setShouldShowName(true);
+        this.setShouldShowName(false);
+        this.setCustomNameVisible(true);
     }
 
     @Override
