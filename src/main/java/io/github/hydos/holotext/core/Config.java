@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.github.legacy_fabric_community.serialization.CommonCodecs;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -16,7 +17,7 @@ public class Config {
     private final List<Entry> entries;
 
     public Config(List<Entry> entries) {
-        this.entries = entries;
+        this.entries = Lists.newArrayList(entries);
     }
 
     public List<Entry> getEntries() {

@@ -9,16 +9,31 @@ import java.util.function.Consumer;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
+import io.github.hydos.holotext.core.Config;
+import io.github.hydos.holotext.core.HoloTextCommand;
+import io.github.hydos.holotext.core.HoloTexts;
 import io.github.legacy_fabric_community.serialization.json.JanksonOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+
+import net.minecraft.command.CommandSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.server.world.ServerWorld;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class HoloText implements ModInitializer {
+public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 	public static final Logger LOGGER = LogManager.getLogger();
-//	public static Config CONFIG;
+	public static final CommandDispatcher<CommandSource> DISPATCHER = new CommandDispatcher<>();
+	public static final HoloTextCommand HOLOTEXT_CMD = new HoloTextCommand();
+	public static Config CONFIG;
 	private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("holotext.json5");
 	private static final Jankson JANKSON = Jankson.builder().build();
 	private static final Consumer<String> PRINT_TO_STDERR = System.err::println;
@@ -28,22 +43,24 @@ public class HoloText implements ModInitializer {
 		LOGGER.info("Starting HoloText");
 		check();
 		deserialize();
+		ServerEntityEvents.ENTITY_LOAD.register(this);
+		HOLOTEXT_CMD.register(DISPATCHER);
 	}
 
 	public static void serialize() {
-//		try {
-//			Files.write(CONFIG_PATH, Config.CODEC.encode(CONFIG, JanksonOps.INSTANCE, JanksonOps.INSTANCE.empty()).getOrThrow(false, PRINT_TO_STDERR).toJson(true, true).getBytes(StandardCharsets.UTF_8));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			Files.write(CONFIG_PATH, Config.CODEC.encode(CONFIG, JanksonOps.INSTANCE, JanksonOps.INSTANCE.empty()).getOrThrow(false, PRINT_TO_STDERR).toJson(true, true).getBytes(StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void deserialize() {
-//		try {
-//			CONFIG = Config.CODEC.decode(JanksonOps.INSTANCE, JANKSON.load(CONFIG_PATH.toFile())).getOrThrow(false, PRINT_TO_STDERR).getFirst();
-//		} catch (SyntaxError | IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			CONFIG = Config.CODEC.decode(JanksonOps.INSTANCE, JANKSON.load(CONFIG_PATH.toFile())).getOrThrow(false, PRINT_TO_STDERR).getFirst();
+		} catch (SyntaxError | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void check() {
@@ -61,5 +78,22 @@ public class HoloText implements ModInitializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onLoad(Entity entity, ServerWorld serverWorld) {
+		LOGGER.info("an entity loaded");
+		if (entity instanceof ArmorStandEntity) {
+			if (HoloTexts.check((ArmorStandEntity) entity)) {
+			}
+		}
+	}
+
+	public static LiteralArgumentBuilder<CommandSource> literal(String name) {
+		return LiteralArgumentBuilder.literal(name);
+	}
+
+	public static <T> RequiredArgumentBuilder<CommandSource, T> argument(String name, ArgumentType<T> type) {
+		return RequiredArgumentBuilder.argument(name, type);
 	}
 }
