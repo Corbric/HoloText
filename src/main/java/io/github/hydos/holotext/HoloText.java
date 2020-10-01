@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import blue.endless.jankson.Jankson;
+import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import io.github.hydos.holotext.core.ArmorStandExtensions;
@@ -57,7 +58,7 @@ public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 
 	public static void deserialize() {
 		try {
-			CONFIG = Config.CODEC.decode(JanksonOps.INSTANCE, JANKSON.load(CONFIG_PATH.toFile())).getOrThrow(false, PRINT_TO_STDERR).getFirst();
+			CONFIG = Config.CODEC.decode(JanksonOps.INSTANCE, JANKSON.load(Files.newInputStream(CONFIG_PATH))).getOrThrow(false, PRINT_TO_STDERR).getFirst();
 		} catch (SyntaxError | IOException e) {
 			e.printStackTrace();
 		}
@@ -71,7 +72,7 @@ public class HoloText implements ModInitializer, ServerEntityEvents.Load {
 			if (!Files.exists(CONFIG_PATH)) {
 				Files.createFile(CONFIG_PATH);
 				var e = new JsonObject();
-				e.put("entries", new JsonObject(), "The data pertaining to each holotext will be stored in this file");
+				e.put("entries", new JsonArray(), "The data pertaining to each holotext will be stored in this file");
 				Files.writeString(CONFIG_PATH, e.toJson(true, true));
 			}
 		} catch (IOException e) {
